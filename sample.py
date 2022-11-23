@@ -8,16 +8,9 @@ from BatchBean import *
 
 class Batch(BatchBean):
 
-    @tracebacks(alert=True,telegramKey="xxxx")
+    @tracebacks(telegram="telegram_api_key", line="line_api_key")
     def main(self):#{
-        logger.info("test")
-        print("this is main")
-
-        a = 0
-        b = 1
-        c = b/a
-
-        logger.info("test")
+        pass
     #}
     
     def addArgParserOptions(self, argParser):#{

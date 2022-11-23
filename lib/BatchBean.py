@@ -14,6 +14,7 @@ def tracebacks(**kwargs):
                 traceback_msg_array = []
                 traceback_msg_array.append("*" * 100)
                 traceback_msg_array.append("[Traceback-start]")
+                traceback_msg_array.append("")
                 traceback_msg_array.append(traceback_msg)
                 traceback_msg_array.append("[Traceback-end]")
                 traceback_msg_array.append("*" * 100)
@@ -21,9 +22,11 @@ def tracebacks(**kwargs):
                 logger.info("\n"+"\n".join(traceback_msg_array))
                 print("\n".join(traceback_msg_array))
 
-                if kwargs.get("alert",False):
-                    #send alert
-                    #msg = "[ %s ][ %s ]\n\n%s" % (socket.gethostname(),sys.argv[0],traceback_msg)
+                if kwargs.get("telegram",False):
+                    # send telegram alert use telegram_api_key
+                    pass
+                elif kwargs.get("line",False):
+                    # send line alert use line_api_key
                     pass
 
                 sys.exit(-1)
@@ -50,9 +53,7 @@ class BatchBean():
         logger.info("-"*100)
 
     def addArgParserOptionsWrapper(self, argParser):
-
         argParser.add_argument('-g','--debug', required=True, choices=['yes','no'], help="yes:debug mode, n0:normal mode")
-
         self.addArgParserOptions(argParser)
         self.args = argParser.parse_args()
 
