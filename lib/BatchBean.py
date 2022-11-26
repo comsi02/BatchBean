@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-import socket
+import datetime as dt
+import time as tm
 from Log import *
 
 def tracebacks(**kwargs):
@@ -7,6 +8,10 @@ def tracebacks(**kwargs):
         from functools import wraps
         @wraps(func)
         def func_wrapper(name):
+            start_dt = dt.datetime.now()
+            logger.info("-"*100)
+            logger.info("[START]")
+            logger.info("-"*100)
             try:
                 func(name)
             except:
@@ -28,8 +33,22 @@ def tracebacks(**kwargs):
                 elif kwargs.get("line",False):
                     # send line alert use line_api_key
                     pass
-
+            finally:
+                logger.info("-"*100)
+                logger.info("[ END ] - elapse : %s ms",(dt.datetime.now() - start_dt).total_seconds())
+                logger.info("-"*100)
                 sys.exit(-1)
+        return func_wrapper
+    return tags_decorator
+
+def elapse():
+    def tags_decorator(func):
+        from functools import wraps
+        @wraps(func)
+        def func_wrapper(name):
+            start_dt = dt.datetime.now()
+            func(name)
+            logger.info(" * (%s) - elapse : %s ms" % (func.__name__,(dt.datetime.now() - start_dt).total_seconds()))
         return func_wrapper
     return tags_decorator
 
@@ -38,19 +57,13 @@ class BatchBean():
         import argparse
         import atexit
 
-        logger.info("-"*100)
-        logger.info("[START]")
-        logger.info("-"*100)
-
         argParser = argparse.ArgumentParser(description='========== [ ' + sys.argv[0] + ' ] ==========')
         self.addArgParserOptionsWrapper(argParser)
 
         atexit.register(self.cleanup)
 
     def cleanup(self):
-        logger.info("-"*100)
-        logger.info("[ END ]")
-        logger.info("-"*100)
+        pass
 
     def addArgParserOptionsWrapper(self, argParser):
         argParser.add_argument('-g','--debug', required=True, choices=['yes','no'], help="yes:debug mode, n0:normal mode")
@@ -59,3 +72,4 @@ class BatchBean():
 
     def addArgParserOptions(self, parser):
         pass
+
