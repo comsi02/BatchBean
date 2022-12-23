@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import datetime as dt
 import time as tm
+from DatabaseManager import *
 from Log import *
 
 def tracebacks(**kwargs):
@@ -10,11 +11,11 @@ def tracebacks(**kwargs):
         def func_wrapper(name):
             start_dt = dt.datetime.now()
             logger.info("-"*100)
-            logger.info("[START]")
+            logger.info("[START(%s)]" % (name))
             logger.info("-"*100)
             try:
                 func(name)
-            except:
+            except Exception as e:
                 traceback_msg = "Traceback: %s" % traceback.format_exc()
                 traceback_msg_array = []
                 traceback_msg_array.append("*" * 100)
@@ -24,8 +25,13 @@ def tracebacks(**kwargs):
                 traceback_msg_array.append("[Traceback-end]")
                 traceback_msg_array.append("*" * 100)
 
+                exception_msg = "Exception: %s" % e
+
                 logger.info("\n"+"\n".join(traceback_msg_array))
+                logger.info(exception_msg)
+
                 print("\n".join(traceback_msg_array))
+                print(exception_msg)
 
                 if kwargs.get("telegram",False):
                     # send telegram alert use telegram_api_key
@@ -35,7 +41,7 @@ def tracebacks(**kwargs):
                     pass
             finally:
                 logger.info("-"*100)
-                logger.info("[ END ] - elapse : %s ms",(dt.datetime.now() - start_dt).total_seconds())
+                logger.info("[ END (%s)] - elapse : %s ms" % (name,(dt.datetime.now() - start_dt).total_seconds()))
                 logger.info("-"*100)
                 sys.exit(-1)
         return func_wrapper
@@ -54,22 +60,42 @@ def elapse():
 
 class BatchBean():
     def __init__(self):
+        logger.info("[INIT ]")
         import argparse
         import atexit
 
         argParser = argparse.ArgumentParser(description='========== [ ' + sys.argv[0] + ' ] ==========')
         self.addArgParserOptionsWrapper(argParser)
+        self.addDatabaseConnectionWarrper()
 
         atexit.register(self.cleanup)
 
     def cleanup(self):
-        pass
+        if self.conn:
+            for name,conn in sorted(self.conn.items()):
+                DatabaseManager.close(conn)
+                logger.info(" * db close  : %-15s : %s" % (name,conn))
+
+        logger.info("[CLOSE]")
 
     def addArgParserOptionsWrapper(self, argParser):
-        argParser.add_argument('-g','--debug', required=True, choices=['yes','no'], help="yes:debug mode, n0:normal mode")
+        argParser.add_argument('-e','--env', required=True, choices=['dev','prod'], help="dev:development mode, prod:production mode")
         self.addArgParserOptions(argParser)
         self.args = argParser.parse_args()
+        self.env = self.args.env
+
+        logger.info(" * argparse  : {}".format(self.args))
+
+    def addDatabaseConnectionWarrper(self):
+        self.conn = {}
+        self.addDatabaseConnection()
+
+        for name,conn in sorted(self.conn.items()):
+            DatabaseManager.close(conn)
+            logger.info(" * db connect: %-15s : %s" % (name,conn))
 
     def addArgParserOptions(self, parser):
         pass
 
+    def addDatabaseConnection(self):
+        pass

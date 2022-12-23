@@ -1,0 +1,30 @@
+mysql_sample:
+  primary:
+    type: mysql
+    host: 127.0.0.1
+    user: comsi02
+    password: 1234
+    db: sample
+    charset: utf8
+  secondary:
+    type: mysql
+    host: 127.0.0.1
+    user: comsi02
+    password: 1234
+    db: sample
+    charset: utf8
+mssql_sample:
+  primary:
+    type: mssql
+    host: 127.0.0.1
+    failover_partner: 127.0.0.2
+    port: 1433
+    user: comsi02
+    password: 1234
+    db: sample
+redis_sample:
+  primary:
+    type: redis
+    host: 127.0.0.1
+    port: 6379
+    db: 0
