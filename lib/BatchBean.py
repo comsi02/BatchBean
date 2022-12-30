@@ -11,7 +11,7 @@ def tracebacks(**kwargs):
         def func_wrapper(name):
             start_dt = dt.datetime.now()
             logger.info("-"*100)
-            logger.info("[START(%s)]" % (name))
+            logger.info("[BGN - (%s)]" % (name))
             logger.info("-"*100)
             try:
                 func(name)
@@ -41,7 +41,7 @@ def tracebacks(**kwargs):
                     pass
             finally:
                 logger.info("-"*100)
-                logger.info("[ END (%s)] - elapse : %s ms" % (name,(dt.datetime.now() - start_dt).total_seconds()))
+                logger.info("[END - (%s)] - elapse : %s ms" % (name,(dt.datetime.now() - start_dt).total_seconds()))
                 logger.info("-"*100)
                 sys.exit(-1)
         return func_wrapper
@@ -54,29 +54,38 @@ def elapse():
         def func_wrapper(name):
             start_dt = dt.datetime.now()
             func(name)
-            logger.info(" * (%s) - elapse : %s ms" % (func.__name__,(dt.datetime.now() - start_dt).total_seconds()))
+            logger.info("#"*(26+int(len(func.__name__))))
+            logger.info("# ({}) - elapse : {:.3f} ms #".format(func.__name__,(dt.datetime.now() - start_dt).total_seconds()))
+            logger.info("#"*(26+int(len(func.__name__))))
+            logger.info("")
         return func_wrapper
     return tags_decorator
 
 class BatchBean():
     def __init__(self):
-        logger.info("[INIT ]")
-        import argparse
-        import atexit
+        logger.info("")
+        logger.info("[INT]"+"-"*95)
 
-        argParser = argparse.ArgumentParser(description='========== [ ' + sys.argv[0] + ' ] ==========')
-        self.addArgParserOptionsWrapper(argParser)
-        self.addDatabaseConnectionWarrper()
+        try:
+            import argparse
+            import atexit
 
-        atexit.register(self.cleanup)
+            argParser = argparse.ArgumentParser(description='========== [ ' + sys.argv[0] + ' ] ==========')
+
+            self.addArgParserOptionsWrapper(argParser)
+            self.addDatabaseConnectionWarrper()
+
+            atexit.register(self.cleanup)
+        except:
+            pass
 
     def cleanup(self):
         if self.conn:
             for name,conn in sorted(self.conn.items()):
                 DatabaseManager.close(conn)
-                logger.info(" * db close  : %-15s : %s" % (name,conn))
+                logger.info(" * db close  : %-20s : %s" % (name,conn))
 
-        logger.info("[CLOSE]")
+        logger.info("[DEL]"+"-"*95)
 
     def addArgParserOptionsWrapper(self, argParser):
         argParser.add_argument('-e','--env', required=True, choices=['dev','prod'], help="dev:development mode, prod:production mode")
@@ -92,7 +101,7 @@ class BatchBean():
 
         for name,conn in sorted(self.conn.items()):
             DatabaseManager.close(conn)
-            logger.info(" * db connect: %-15s : %s" % (name,conn))
+            logger.info(" * db connect: %-20s : %s" % (name,conn))
 
     def addArgParserOptions(self, parser):
         pass
