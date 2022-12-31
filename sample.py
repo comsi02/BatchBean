@@ -11,19 +11,16 @@ class Batch(BatchBean):
 
     @tracebacks(telegram="telegram_api_key", line="line_api_key")
     def main(self):
-        self.testElapse()
         self.testSelectWithoutParam()
         self.testSelectWithParam()
         self.testSelectOne()
+        self.testSelectDict()
+
         self.testInsert()
         self.testUpdate()
         self.testDelete()
         self.testInsertDict()
         pass
-
-    @elapse()
-    def testElapse(self):
-        tm.sleep(0.1)
 
     @elapse()
     def testSelectWithoutParam(self):
@@ -85,6 +82,16 @@ class Batch(BatchBean):
         param2 = {'name': 'Tm', 'grade': '4'}
         MysqlUtils.insertDict(self.conn['sample_primary'], "sample.users_modify", param1, debug=True, auto_commit=True)
         MysqlUtils.insertDict(self.conn['sample_primary'], "sample.users_modify", param2, debug=True, auto_commit=True)
+        pass
+
+    @elapse()
+    def testSelectDict(self):
+        tableName = 'sample.users'
+        columns = ['firstname','lastname','birth']
+        conditions = {'sex':'female','birth':'1977-11-05'}
+
+        for x in MysqlUtils.selectDict(self.conn['sample_primary'],tableName,columns,conditions,debug=True):
+            logger.info(x)
         pass
 
     # abstract method

@@ -63,6 +63,13 @@ class MysqlUtils:
         return '`{}`'.format(colName.replace('`', '``'))
 
     @staticmethod
+    def selectDict(conn, tableName, columns, conditions, **opt):
+        whereCondition = ' AND '.join(["`{}` = '{}'".format(k,v) for k,v in conditions.items()])
+        cols = ', '.join(map(MysqlUtils.escapeColumn, columns))
+        sql = "SELECT %s FROM %s WHERE %s" % (cols, tableName, whereCondition)
+        return MysqlUtils.select(conn, sql, output=opt.get('output',dict), debug=opt.get('debug',False))
+ 
+    @staticmethod
     def insertDict(conn, tableName, param, **opt):
         names = list(param)
         cols = ', '.join(map(MysqlUtils.escapeColumn, names))
