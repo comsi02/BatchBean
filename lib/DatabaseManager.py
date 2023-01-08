@@ -93,10 +93,7 @@ class DatabaseManager():
     @staticmethod
     def close(conn):
         try:
-            if type(conn) == redis.StrictRedis:
-                del conn
-            else:
-                conn.close()
-        except:
+            conn.close()
+            del conn
+        except Exception as e:
             pass
-

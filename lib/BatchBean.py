@@ -100,7 +100,6 @@ class BatchBean():
         self.addDatabaseConnection()
 
         for name,conn in sorted(self.conn.items()):
-            DatabaseManager.close(conn)
             logger.info(" * db connect: %-20s : %s" % (name,conn))
 
     def addArgParserOptions(self, parser):
