@@ -71,9 +71,9 @@ class DatabaseManager():
     def connect(env, databaseName, **opt):
         try:
             import yaml
+            from RootPath import Root
 
-            from RootPath import ROOT_PATH
-            with open(ROOT_PATH+'/config/database.{}.yaml'.format(env),'r') as y:
+            with open(Root.path+'/config/database.{}.yaml'.format(env),'r') as y:
                 y = yaml.safe_load(y)
                 conf = y[databaseName][opt.get('section','primary')]
                 databaseType = conf.get('type',False)

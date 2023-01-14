@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
+class Root():
+    path = '/tmp'
+
 import os
 x = os.path.abspath(__file__).split('/')
-ROOT_PATH = '/tmp'
 while x.pop():
     if os.path.isdir('/'.join(x)+'/lib'):
-        ROOT_PATH = '/'.join(x)
+        Root.path = '/'.join(x)
         break

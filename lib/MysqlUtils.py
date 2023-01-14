@@ -1,4 +1,4 @@
-from Log import *
+from Log import logger
 
 class MysqlUtils:
     @staticmethod
